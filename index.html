@@ -126,7 +126,7 @@
         <form class="input-box" method="get" action="">
             <div style="display: flex; align-items: center;">
                 <select id="engine-select">
-                    <option value="gpt4">GPT-4</option>
+                    <option value="gpt3">GPT-3</option>
                     <option value="arched-keyword">Arched</option>
                 </select>
                 <input id="search" name="q" type="text" placeholder="Message" />
@@ -138,7 +138,7 @@
     <script>
         async function create(prompt, model) {
             let data, url;
-            if (model === 'gpt4') {
+            if (model === 'gpt3') {
                 url = 'https://ava-alpha-api.codelink.io/api/chat';
                 data = {
                     model: 'gpt-4',
@@ -163,7 +163,7 @@
             });
 
             // Handle the response based on the model
-            if (model === 'gpt4') {
+            if (model === 'gpt3') {
                 let respText = '';
 
                 const reader = resp.body.getReader();
