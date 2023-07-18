@@ -23,8 +23,11 @@
 ## Technologies Used
 
 🔧 HTML
+
 🎨 CSS
+
 📜 JavaScript
+
 🔌 jQuery
 
 ## Credit / Acknowledgement
