@@ -13,8 +13,11 @@
 ## Features
 
 ✨ Two models available: GPT-4 and Arched Keyword.
+
 📱 Responsive design for different screen sizes.
+
 ⏱️ Real-time interaction with the AI assistant.
+
 🌟 Simple and intuitive user interface.
 
 ## Technologies Used
