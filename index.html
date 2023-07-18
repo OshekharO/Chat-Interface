@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Chat Interface</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+        body {
+            background-color: #333;
+            padding: 10px;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        #chat-container {
+            flex-grow: 1;
+            overflow: hidden;
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #999;
+            border-radius: 10px;
+            background-color: #444;
+            display: flex;
+            flex-direction: column;
+        }
+        #chatbox {
+            flex-grow: 1;
+            overflow: auto;
+            margin-bottom: 10px;
+            word-wrap: break-word;
+        }
+        .message {
+            margin-bottom: 10px;
+            padding: 5px;
+            border-radius: 5px;
+        }
+        .bot {
+            color: #000;
+            background-color: #D3D3D3;
+            align-self: flex-start;
+        }
+        .user {
+            color: #FFF;
+            background-color: #000080;
+            align-self: flex-end;
+        }
+        #controls {
+            width: 100%;
+            max-width: 500px;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .input-box {
+            background-color: white;
+            justify-content: space-between;
+            border-radius: 25px;
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            width: 80%;
+        }
+        #search {
+            border: none;
+            font-size: 18px;
+            padding: 5px;
+            width: 100%;
+        }
+        #engine-select {
+            padding: 5px;
+            border-radius: 15px;
+            border: none;
+            font-size: 16px;
+            background-color: #FFF;
+        }
+        button {
+            background-color: #4285f4;
+            border: none;
+            border-radius: 25px;
+            color: white;
+            font-size: 18px;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #357ae8;
+        }
+        @media (max-width: 768px) {
+            .input-box {
+                width: 100%;
+            }
+        }
+        @media (min-width:801px) {
+  
+        }
+        .mx-auto {
+            margin-right: auto !important;
+            margin-left: auto !important;
+        }
+        .search-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 50px;
+        }
+        main {
+            background-color: #f1f3f4;
+            height: 100%;
+            padding: 50px 0;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    <div id="chat-container">
+        <div id="chatbox"></div>
+    </div>
+    <div id="controls">
+        <form class="input-box" method="get" action="">
+            <div style="display: flex; align-items: center;">
+                <select id="engine-select">
+                    <option value="gpt4">GPT-4</option>
+                    <option value="arched-keyword">Arched</option>
+                </select>
+                <input id="search" name="q" type="text" placeholder="Message" />
+            </div>
+            <button type="button" onclick="sendMessage()">Send</button>
+        </form>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        async function create(prompt, model) {
+            let data, url;
+            if (model === 'gpt4') {
+                url = 'https://ava-alpha-api.codelink.io/api/chat';
+                data = {
+                    model: 'gpt-4',
+                    temperature: 0.6,
+                    stream: true,
+                    messages: [
+                        {role: 'system', content: 'You are Ava, an AI assistant.'},
+                        {role: 'user', content: prompt},
+                    ],
+                };
+            } else if (model === 'arched-keyword') {
+                url = 'https://us-central1-arched-keyword-306918.cloudfunctions.net/run-inference-1';
+                data = {prompt: prompt};
+            }
+
+            const resp = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            // Handle the response based on the model
+            if (model === 'gpt4') {
+                let respText = '';
+
+                const reader = resp.body.getReader();
+                const decoder = new TextDecoder('utf-8');
+                return reader.read().then(function processText({ done, value }) {
+                    if (done) {
+                        return respText;
+                    }
+                    const chunk = decoder.decode(value);
+                    const lines = chunk.split('\n');
+                    for (const line of lines) {
+                        if (line.startsWith('data:')) {
+                            const dataPart = line.slice(5);
+                            try {
+                                const dataObj = JSON.parse(dataPart);
+                                if ('choices' in dataObj) {
+                                    for (const choice of dataObj.choices) {
+                                        if ('finish_reason' in choice && choice.finish_reason === 'stop') {
+                                            break;
+                                        }
+                                        if ('delta' in choice && 'content' in choice.delta) {
+                                            respText += choice.delta.content;
+                                        }
+                                    }
+                                }
+                            } catch (err) {
+                                console.error(err);
+                            }
+                        }
+                    }
+                    return reader.read().then(processText);
+                });
+            } else if (model === 'arched-keyword') {
+                const respJson = await resp.json();
+                return respJson['completion'];
+            }
+        }
+
+        async function sendMessage() {
+            let prompt = $('#search').val();
+            let model = $('#engine-select').val();
+            $('#chatbox').append('<p class="message user">You: ' + prompt + '</p>');
+            let resp = await create(prompt, model);
+            $('#chatbox').append('<p class="message bot">Bot: ' + resp + '</p>');
+            $('#search').val(''); // clear the input box
+            $('#chatbox').scrollTop($('#chatbox')[0].scrollHeight); // scroll to bottom
+        }
+
+        $("#search").keyup(function(event) {
+            if (event.keyCode === 13) {
+                sendMessage();
+            }
+        });
+    </script>
+</body>
+</html>
