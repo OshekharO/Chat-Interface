@@ -226,6 +226,7 @@
       <select id="engine-select">
        <option value="gpt4">GPT-4</option>
        <option value="arched-keyword">Arched</option>
+       <option value="dfehub">Easychat</option>
       </select>
       <textarea id="chat-input" spellcheck="false" placeholder="prompt" required></textarea>
      </form>
@@ -267,21 +268,15 @@
        { role: "user", content: prompt },
       ],
      };
-    } else if (model === "arched-keyword") {
-     url = "https://us-central1-arched-keyword-306918.cloudfunctions.net/run-inference-1";
-     data = { prompt: prompt };
-    }
 
-    const resp = await fetch(url, {
-     method: "POST",
-     headers: {
-      "Content-Type": "application/json",
-     },
-     body: JSON.stringify(data),
-    });
+     const resp = await fetch(url, {
+      method: "POST",
+      headers: {
+       "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+     });
 
-    // Handle the response based on the model
-    if (model === "gpt4") {
      let respText = "";
 
      const reader = resp.body.getReader();
@@ -315,8 +310,81 @@
       return reader.read().then(processText);
      });
     } else if (model === "arched-keyword") {
+     url = "https://us-central1-arched-keyword-306918.cloudfunctions.net/run-inference-1";
+     data = { prompt: prompt };
+
+     const resp = await fetch(url, {
+      method: "POST",
+      headers: {
+       "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+     });
+
      const respJson = await resp.json();
      return respJson["completion"];
+    } else if (model === "dfehub") {
+     url = "https://chat.dfehub.com/api/openai/v1/chat/completions";
+     data = {
+      messages: [{ role: "user", content: prompt }],
+      model: "gpt-3.5-turbo",
+      temperature: 0.5,
+      presence_penalty: 0,
+      frequency_penalty: 0,
+      top_p: 1,
+     };
+
+     const resp = await fetch(url, {
+      method: "POST",
+      headers: {
+       "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+     });
+
+     const reader = resp.body.getReader();
+     const decoder = new TextDecoder("utf-8");
+     let botResponse = "";
+
+     return new Promise((resolve) => {
+      const processText = ({ done, value }) => {
+       if (done) {
+        resolve(botResponse);
+        return;
+       }
+
+       const chunk = decoder.decode(value);
+       const lines = (botResponse + chunk).split("\n");
+
+       for (const line of lines) {
+        if (line.startsWith("data:")) {
+         const dataPart = line.slice(5).trim();
+         if (dataPart) {
+          try {
+           const dataObj = JSON.parse(dataPart);
+           if ("choices" in dataObj) {
+            for (const choice of dataObj.choices) {
+             if ("finish_reason" in choice && choice.finish_reason === "stop") {
+              resolve(botResponse);
+              return;
+             }
+             if ("delta" in choice && "content" in choice.delta) {
+              botResponse += choice.delta.content;
+             }
+            }
+           }
+          } catch (err) {
+           console.error(err);
+          }
+         }
+        }
+       }
+
+       return reader.read().then(processText);
+      };
+
+      reader.read().then(processText);
+     });
     }
    }
 
@@ -358,4 +426,4 @@
    });
   </script>
  </body>
-    </html>
+</html>
