@@ -301,38 +301,9 @@
             }),
           });
 
-          let respText = "";
-
-          const reader = resp.body.getReader();
-          const decoder = new TextDecoder("utf-8");
-          return reader.read().then(function processText({ done, value }) {
-            if (done) {
-              return respText;
-            }
-            const chunk = decoder.decode(value);
-            const lines = chunk.split("\n");
-            for (const line of lines) {
-              if (line.startsWith("data:")) {
-                const dataPart = line.slice(5);
-                try {
-                  const dataObj = JSON.parse(dataPart);
-                  if ("choices" in dataObj) {
-                    for (const choice of dataObj.choices) {
-                      if ("finish_reason" in choice && choice.finish_reason === "stop") {
-                        break;
-                      }
-                      if ("delta" in choice && "content" in choice.delta) {
-                        respText += choice.delta.content;
-                      }
-                    }
-                  }
-                } catch (err) {
-                  console.error(err);
-                }
-              }
-            }
-            return reader.read().then(processText);
-          });
+const respJsonArray = await resp.json();
+const completionArray = respJsonArray.map(item => item["data"]);
+return completionArray.join('');
         } else if (model === "aura") {
           url = "https://proxy.techzbots1.workers.dev/?u=https://openchat.team/api/chat";
           //data = { prompt: prompt };
