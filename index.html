@@ -226,7 +226,7 @@
             <select id="engine-select">
               <option value="aura">Aura</option>
               <option value="gpt4">GPT-4</option>
-              <option value="dfehub">Easychat</option>
+              <option value="apine">Easy</option>
               <option value="lockchat">Lockchat</option>
             </select>
             <textarea id="chat-input" spellcheck="false" placeholder="prompt" required></textarea>
@@ -345,8 +345,8 @@
          // text response
           const respText = await resp.text();
           return respText;
-        } else if (model === "dfehub") {
-          url = "https://api.anonchatgpt.com/query?queryText=${prompt}";
+        } else if (model === "apine") {
+          url = `https://proxy.techzbots1.workers.dev/?u=https://chatgpt.apinepdev.workers.dev/?question=${prompt}`;
 
           const resp = await fetch(url, {
             method: "GET",
@@ -357,7 +357,7 @@
           });
 
          const respJson = await resp.json();
-         return respJson["responseText"];
+         return respJson["answer"];
         } else if (model === "lockchat") {
           url = "http://supertest.lockchat.app/v1/chat/completions";
           data = {
