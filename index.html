@@ -339,74 +339,25 @@
           });
 
          // json response
-      /* const respJson = await resp.json();
+      /* respJson = await resp.json();
          return respJson["completion"];  */
 
          // text response
           const respText = await resp.text();
           return respText;
         } else if (model === "dfehub") {
-          url = "https://chat.dfehub.com/api/openai/v1/chat/completions";
-          data = {
-            messages: [{ role: "user", content: prompt }],
-            model: "gpt-3.5-turbo",
-            temperature: 0.5,
-            presence_penalty: 0,
-            frequency_penalty: 0,
-            top_p: 1,
-          };
+          url = "https://api.anonchatgpt.com/query?queryText=${prompt}";
 
           const resp = await fetch(url, {
-            method: "POST",
+            method: "GET",
             headers: {
               "Content-Type": "application/json",
+              "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
             },
-            body: JSON.stringify(data),
           });
 
-          const reader = resp.body.getReader();
-          const decoder = new TextDecoder("utf-8");
-          let botResponse = "";
-
-          return new Promise((resolve) => {
-            const processText = ({ done, value }) => {
-              if (done) {
-                resolve(botResponse);
-                return;
-              }
-
-              const chunk = decoder.decode(value);
-              const lines = (botResponse + chunk).split("\n");
-
-              for (const line of lines) {
-                if (line.startsWith("data:")) {
-                  const dataPart = line.slice(5).trim();
-                  if (dataPart) {
-                    try {
-                      const dataObj = JSON.parse(dataPart);
-                      if ("choices" in dataObj) {
-                        for (const choice of dataObj.choices) {
-                          if ("finish_reason" in choice && choice.finish_reason === "stop") {
-                            resolve(botResponse);
-                            return;
-                          }
-                          if ("delta" in choice && "content" in choice.delta) {
-                            botResponse += choice.delta.content;
-                          }
-                        }
-                      }
-                    } catch (err) {
-                      console.error(err);
-                    }
-                  }
-                }
-              }
-
-              return reader.read().then(processText);
-            };
-
-            reader.read().then(processText);
-          });
+         const respJson = await resp.json();
+         return respJson["responseText"];
         } else if (model === "lockchat") {
           url = "http://supertest.lockchat.app/v1/chat/completions";
           data = {
