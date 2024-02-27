@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <title>Chat Interface</title>
@@ -289,24 +289,23 @@
             },
             body: JSON.stringify({
               model: "gpt-3.5-turbo",
-              nsfw: False,
+              nsfw: "False",
               question: prompt,
               promptId: "model-gpt-3.5-turbo",
               documentIds: [],
               chatFileDocumentIds: [],
               system: "You are helpful assistant. Follow the user's instructions carefully.",
-              generateImage: False,
-              generateAudio: False,
+              generateImage: "False",
+              generateAudio: "False",
               temperature: 0.7,
             }),
           });
 
-const respJsonArray = await resp.json();
-const completionArray = respJsonArray.map(item => item["data"]);
-return completionArray.join('');
+          const respJsonArray = await resp.json();
+          const completionArray = respJsonArray.map(item => item["data"]);
+          return completionArray.join('');
         } else if (model === "aura") {
           url = "https://proxy.techzbots1.workers.dev/?u=https://openchat.team/api/chat";
-          //data = { prompt: prompt };
 
           const resp = await fetch(url, {
             method: "POST",
