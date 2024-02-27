@@ -259,7 +259,7 @@
       async function create(prompt, model) {
         let data, url;
         if (model === "gpt4") {
-          url = "https://proxy.techzbots1.workers.dev/?u=https://www.aitool.ink/api/openai/v1/chat/completions";
+          url = "https://www.aitool.ink/api/openai/v1/chat/completions";
          /* data = {
             model: { id: "openchat_v3.2_mistral", name: "OpenChat Aura", maxLength: 24576, tokenLimit: 8192 },
             temperature: 0.6,
@@ -293,7 +293,7 @@
                 { role: "system", content: "You are a helpful assistant." },
                 { role: "user", content: prompt },
               ],
-              stream: "true",
+              stream: true,
               presence_penalty: 0,
               frequency_penalty: 0,
               top_p: 1,
