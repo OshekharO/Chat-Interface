@@ -259,7 +259,7 @@
       async function create(prompt, model) {
         let data, url;
         if (model === "gpt4") {
-          url = "https://proxy.techzbots1.workers.dev/?u=https://backend-k8s.flowgpt.com/v2/chat-anonymous";
+          url = "https://proxy.techzbots1.workers.dev/?u=https://www.aitool.ink/api/openai/v1/chat/completions";
          /* data = {
             model: { id: "openchat_v3.2_mistral", name: "OpenChat Aura", maxLength: 24576, tokenLimit: 8192 },
             temperature: 0.6,
@@ -274,36 +274,38 @@
             method: "POST",
             headers: {
             "User-Agent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:122.0) Gecko/20100101 Firefox/122.0",
-            "Accept": "*/*",
+            "Accept": "text/event-stream",
             "Accept-Language": "en-US;q=0.7,en;q=0.3",
             "Accept-Encoding": "gzip, deflate, br",
-            "Referer": "https://flowgpt.com/",
+            "Referer": "https://www.aitool.ink/",
             "Content-Type": "application/json",
-            "Authorization": "Bearer null",
-            "Origin": "https://flowgpt.com",
+            "host": "www.aitool.ink",
+            "Origin": "https://www.aitool.ink",
             "Connection": "keep-alive",
             "Sec-Fetch-Dest": "empty",
             "Sec-Fetch-Mode": "cors",
-            "Sec-Fetch-Site": "same-site",
-            "TE": "trailers",
+            "Sec-Fetch-Site": "same-origin",
+            "X-Requested-With": "XMLHttpRequest",
             },
             body: JSON.stringify({
               model: "gpt-3.5-turbo",
-              nsfw: "False",
-              question: prompt,
-              promptId: "model-gpt-3.5-turbo",
-              documentIds: [],
-              chatFileDocumentIds: [],
-              system: "You are helpful assistant. Follow the user's instructions carefully.",
-              generateImage: "False",
-              generateAudio: "False",
-              temperature: 0.7,
+              messages: [
+                { role: "system", content: "You are a helpful assistant." },
+                { role: "user", content: prompt },
+              ],
+              stream: "true",
+              presence_penalty: 0,
+              frequency_penalty: 0,
+              top_p: 1,
+              temperature: 0.5,
             }),
           });
 
-          const respJsonArray = await resp.json();
+         /* const respJsonArray = await resp.json();
           const completionArray = respJsonArray.map(item => item["data"]);
-          return completionArray.join('');
+          return completionArray.join(''); */
+          const respText = await resp.text();
+          return respText;
         } else if (model === "aura") {
           url = "https://proxy.techzbots1.workers.dev/?u=https://openchat.team/api/chat";
 
