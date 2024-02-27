@@ -259,8 +259,8 @@
       async function create(prompt, model) {
         let data, url;
         if (model === "gpt4") {
-          url = "https://proxy.techzbots1.workers.dev/?u=https://openchat.team";
-          data = {
+          url = "https://proxy.techzbots1.workers.dev/?u=https://backend-k8s.flowgpt.com/v2/chat-anonymous";
+         /* data = {
             model: { id: "openchat_v3.2_mistral", name: "OpenChat Aura", maxLength: 24576, tokenLimit: 8192 },
             temperature: 0.6,
             stream: true,
@@ -268,26 +268,37 @@
               { role: "system", content: "You are Ava, an AI assistant." },
               { role: "user", content: prompt },
             ],
-          };
+          }; */
 
           const resp = await fetch(url, {
             method: "POST",
             headers: {
-              Accept: "*/*",
-              "Accept-Encoding": "gzip, deflate, br",
-              "Accept-Language": "en-GB,en-US;q=0.9,en;q=0.8",
-              "Content-Type": "application/json",
-              Origin: "https://openchat.team",
-              Referer: "https://openchat.team/",
-              "Sec-Ch-Ua": '"Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"',
-              "Sec-Ch-Ua-Mobile": "?0",
-              "Sec-Ch-Ua-Platform": '"Linux"',
-              "Sec-Fetch-Dest": "empty",
-              "Sec-Fetch-Mode": "cors",
-              "Sec-Fetch-Site": "same-origin",
-              "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            "User-Agent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:122.0) Gecko/20100101 Firefox/122.0",
+            "Accept": "*/*",
+            "Accept-Language": "en-US;q=0.7,en;q=0.3",
+            "Accept-Encoding": "gzip, deflate, br",
+            "Referer": "https://flowgpt.com/",
+            "Content-Type": "application/json",
+            "Authorization": "Bearer null",
+            "Origin": "https://flowgpt.com",
+            "Connection": "keep-alive",
+            "Sec-Fetch-Dest": "empty",
+            "Sec-Fetch-Mode": "cors",
+            "Sec-Fetch-Site": "same-site",
+            "TE": "trailers",
             },
-            body: JSON.stringify(data),
+            body: JSON.stringify({
+              model: "gpt-3.5-turbo",
+              nsfw: False,
+              question: prompt,
+              promptId: "model-gpt-3.5-turbo",
+              documentIds: [],
+              chatFileDocumentIds: [],
+              system: "You are helpful assistant. Follow the user's instructions carefully.",
+              generateImage: False,
+              generateAudio: False,
+              temperature: 0.7,
+            }),
           });
 
           let respText = "";
