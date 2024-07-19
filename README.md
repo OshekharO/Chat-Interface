@@ -12,12 +12,9 @@
 
 ## Features
 
-✨ Two models available: GPT-4 and Arched Keyword.
-
+✨ Nine models available
 📱 Responsive design for different screen sizes.
-
 ⏱️ Real-time interaction with the AI assistant.
-
 🌟 Simple and intuitive user interface.
 
 ## Technologies Used
@@ -30,17 +27,17 @@
 
 🔌 jQuery
 
+🍥 [GPT AI](https://github.com/OshekharO/GPT-AI)
+
 ## Credit / Acknowledgement
 
 This chat interface is developed using various technologies and resources. We would like to acknowledge the following:
 
-- The GPT-4 model is powered by the Ava Alpha API.
-- The Arched Keyword model is hosted on the Google Cloud Functions platform.
 - The code for the chat interface is based on a template provided by OpenAI.
 
 ## Demo
 
-🔗 A live demo of the chat interface is available [here](https://uncoder.eu.org/chat).
+🔗 A live demo of the chat interface is available [here](https://saksham.thedev.id/Chat-Interface).
 
 ## License
 
