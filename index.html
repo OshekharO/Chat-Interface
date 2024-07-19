@@ -224,10 +224,15 @@
         <div class="typing-textarea">
           <form class="input-box" method="get" action="">
             <select id="engine-select">
-              <option value="aura">Aura</option>
-              <option value="gpt4">GPT-4</option>
-              <option value="apine">Easy</option>
-              <option value="lockchat">Lockchat</option>
+              <option value="v1">v1</option>
+              <option value="v2">v2</option>
+              <option value="v3">v3</option>
+              <option value="v4">v4</option>
+              <option value="v5">v5</option>
+              <option value="v6">v6</option>
+              <option value="v7">v7</option>
+              <option value="v8">v8</option>
+              <option value="v9">v9</option>
             </select>
             <textarea id="chat-input" spellcheck="false" placeholder="prompt" required></textarea>
           </form>
@@ -256,174 +261,33 @@
         isLightMode = !isLightMode;
       }
 
-      async function create(prompt, model) {
-        let data, url;
-        if (model === "gpt4") {
-          url = "https://www.aitool.ink/api/openai/v1/chat/completions";
-         /* data = {
-            model: { id: "openchat_v3.2_mistral", name: "OpenChat Aura", maxLength: 24576, tokenLimit: 8192 },
-            temperature: 0.6,
-            stream: true,
-            messages: [
-              { role: "system", content: "You are Ava, an AI assistant." },
-              { role: "user", content: prompt },
-            ],
-          }; */
+      async function create(prompt, apiVersion) {
+        const url = `https://gpt-ai-topaz.vercel.app/chat/${apiVersion}`;
 
-          const resp = await fetch(url, {
-            method: "POST",
-            headers: {
-            "User-Agent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:122.0) Gecko/20100101 Firefox/122.0",
-            "Accept": "text/event-stream",
-            "Accept-Language": "en-US;q=0.7,en;q=0.3",
-            "Accept-Encoding": "gzip, deflate, br",
-            "Referer": "https://www.aitool.ink/",
-            "Content-Type": "application/json",
-            "host": "www.aitool.ink",
-            "Origin": "https://www.aitool.ink",
-            "Connection": "keep-alive",
-            "Sec-Fetch-Dest": "empty",
-            "Sec-Fetch-Mode": "cors",
-            "Sec-Fetch-Site": "same-origin",
-            "X-Requested-With": "XMLHttpRequest",
-            },
-            body: JSON.stringify({
-              model: "gpt-3.5-turbo",
-              messages: [
-                { role: "system", content: "You are a helpful assistant." },
-                { role: "user", content: prompt },
-              ],
-              stream: true,
-              presence_penalty: 0,
-              frequency_penalty: 0,
-              top_p: 1,
-              temperature: 0.5,
-            }),
-          });
-
-         /* const respJsonArray = await resp.json();
-          const completionArray = respJsonArray.map(item => item["data"]);
-          return completionArray.join(''); */
-          const respText = await resp.text();
-          return respText;
-        } else if (model === "aura") {
-          url = "https://proxy.techzbots1.workers.dev/?u=https://openchat.team/api/chat";
-
-          const resp = await fetch(url, {
-            method: "POST",
-            headers: {
-              Accept: "*/*",
-              "Accept-Encoding": "gzip, deflate, br",
-              "Accept-Language": "en-GB,en-US;q=0.9,en;q=0.8",
-              "Content-Type": "application/json",
-              Origin: "https://openchat.team",
-              Referer: "https://openchat.team",
-              "Sec-Ch-Ua": '"Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"',
-              "Sec-Ch-Ua-Mobile": "?0",
-              "Sec-Ch-Ua-Platform": '"Linux"',
-              "Sec-Fetch-Dest": "empty",
-              "Sec-Fetch-Mode": "cors",
-              "Sec-Fetch-Site": "same-origin",
-              "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-            },
-            body: JSON.stringify({
-              model: { id: "openchat_v3.2_mistral", name: "OpenChat Aura", maxLength: 24576, tokenLimit: 8192 },
-              messages: [
-                { role: "system", content: "You are a helpful assistant." },
-                { role: "user", content: prompt },
-              ],
-              key: "",
-              prompt: prompt,
-              temperature: 0.1,
-            }),
-          });
-
-         // json response
-      /* respJson = await resp.json();
-         return respJson["completion"];  */
-
-         // text response
-          const respText = await resp.text();
-          return respText;
-        } else if (model === "apine") {
-          url = `https://proxy.techzbots1.workers.dev/?u=https://chatgpt.apinepdev.workers.dev/?question=${prompt}`;
-
-          const resp = await fetch(url, {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-            },
-          });
-
-         const respJson = await resp.json();
-         return respJson["answer"];
-        } else if (model === "lockchat") {
-          url = "http://supertest.lockchat.app/v1/chat/completions";
-          data = {
-            messages: [{ role: "user", content: prompt }],
-            model: "gpt-3.5-turbo",
-            temperature: 0.7,
-            stream: true,
-          };
-
-          const resp = await fetch(url, {
+        try {
+          const response = await fetch(url, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify(data),
+            body: JSON.stringify({ userMessage: prompt }),
           });
 
-          const reader = resp.body.getReader();
-          const decoder = new TextDecoder("utf-8");
-          let botResponse = "";
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
 
-          return new Promise((resolve) => {
-            const processText = ({ done, value }) => {
-              if (done) {
-                resolve(botResponse);
-                return;
-              }
-
-              const chunk = decoder.decode(value);
-              const lines = (botResponse + chunk).split("\n");
-
-              for (const line of lines) {
-                if (line.startsWith("data:")) {
-                  const dataPart = line.slice(5).trim();
-                  if (dataPart) {
-                    try {
-                      const dataObj = JSON.parse(dataPart);
-                      if ("choices" in dataObj) {
-                        for (const choice of dataObj.choices) {
-                          if ("finish_reason" in choice && choice.finish_reason === "stop") {
-                            resolve(botResponse);
-                            return;
-                          }
-                          if ("delta" in choice && "content" in choice.delta) {
-                            botResponse += choice.delta.content;
-                          }
-                        }
-                      }
-                    } catch (err) {
-                      console.error(err);
-                    }
-                  }
-                }
-              }
-
-              return reader.read().then(processText);
-            };
-
-            reader.read().then(processText);
-          });
+          const data = await response.json();
+          return data.reply;
+        } catch (error) {
+          console.error("Error:", error);
+          return "Sorry, there was an error processing your request.";
         }
       }
 
       async function sendMessage() {
         let prompt = document.getElementById("chat-input").value;
-        let model = document.getElementById("engine-select").value;
+        let apiVersion = document.getElementById("engine-select").value;
         let chatContainer = document.querySelector(".chat-container");
 
         // Create user message element
@@ -432,16 +296,23 @@
         userMessage.innerText = "You: " + prompt;
         chatContainer.appendChild(userMessage);
 
-        let resp = await create(prompt, model);
-
-        // Create bot message element
+        // Create bot message element (initially empty)
         let botMessage = document.createElement("p");
         botMessage.classList.add("message", "bot");
-        botMessage.innerText = "Bot: " + resp;
+        botMessage.innerText = "Bot: ";
         chatContainer.appendChild(botMessage);
 
+        // Scroll to bottom
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+
+        // Send request and update bot message
+        let resp = await create(prompt, apiVersion);
+        botMessage.innerText += resp;
+
+        // Scroll to bottom again (in case the response was long)
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+
         document.getElementById("chat-input").value = ""; // Clear the input box
-        chatContainer.scrollTop = chatContainer.scrollHeight; // Scroll to bottom
       }
 
       document.getElementById("send-btn").addEventListener("click", function () {
