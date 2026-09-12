@@ -644,12 +644,19 @@
 
         async function sendMessage() {
             const chatInput = document.getElementById("chat-input");
+            const sendBtn = document.getElementById("send-btn");
             const prompt = chatInput.value.trim();
-            if (!prompt) return;
+            if (!prompt || sendBtn.disabled) return;
 
             const apiVersion = document.getElementById("engine-select").value;
             const chatContainer = document.getElementById("chat-container");
             const welcomeState = document.getElementById("welcome-state");
+
+            // Disable input and update button state during request
+            chatInput.disabled = true;
+            sendBtn.disabled = true;
+            sendBtn.setAttribute("aria-busy", "true");
+            sendBtn.setAttribute("aria-label", "Sending message...");
 
             // Remove welcome placeholder if visible
             if (welcomeState) {
@@ -668,14 +675,14 @@
             userRow.querySelector(".message-content").textContent = prompt;
             chatContainer.appendChild(userRow);
 
-            // Create Bot Thinking Message Row
+            // Create Bot Thinking Message Row with ARIA live region
             const botRow = document.createElement("div");
             botRow.className = "message-row bot-row";
             botRow.innerHTML = `
                 <div class="message-wrapper">
                     <div class="message-avatar">AI</div>
                     <div class="message-content">
-                        <div class="typing-indicator">
+                        <div class="typing-indicator" role="status" aria-live="polite" aria-label="AI is thinking">
                             <span class="typing-dot"></span>
                             <span class="typing-dot"></span>
                             <span class="typing-dot"></span>
@@ -692,13 +699,22 @@
             chatInput.value = "";
             chatInput.style.height = "auto";
 
-            // Send request and update bot message content
-            const resp = await create(prompt, apiVersion);
-            const botContent = botRow.querySelector(".message-content");
-            botContent.textContent = resp;
+            try {
+                // Send request and update bot message content
+                const resp = await create(prompt, apiVersion);
+                const botContent = botRow.querySelector(".message-content");
+                botContent.textContent = resp;
+            } finally {
+                // Re-enable input and button state
+                chatInput.disabled = false;
+                sendBtn.disabled = false;
+                sendBtn.setAttribute("aria-busy", "false");
+                sendBtn.setAttribute("aria-label", "Send message");
+                chatInput.focus();
 
-            // Scroll to bottom again
-            chatContainer.scrollTop = chatContainer.scrollHeight;
+                // Scroll to bottom again
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }
         }
 
         document.getElementById("send-btn").addEventListener("click", sendMessage);
