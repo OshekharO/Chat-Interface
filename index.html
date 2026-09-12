@@ -58,6 +58,8 @@
            ========================================================================== */
         :root {
             /* Color Tokens - Dark Mode Default */
+            --text-on-accent: #ffffff;
+            --avatar-size: 2rem; /* 32px */
             --bg-app: #202123;
             --bg-surface: #2b2c36;
             --bg-header: #202123;
@@ -200,13 +202,19 @@
             width: 28px;
             height: 28px;
             background: var(--accent-primary);
-            color: #ffffff;
+            color: var(--text-on-accent);
             border-radius: var(--radius-md);
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: var(--weight-bold);
             font-size: var(--font-size-sm);
+        }
+
+        .brand-icon svg {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
         }
 
         .brand-title {
@@ -235,6 +243,12 @@
             align-items: center;
             gap: var(--spacing-xs);
             transition: background-color var(--transition-fast), border-color var(--transition-fast);
+        }
+
+        .theme-toggle-btn svg {
+            width: 16px;
+            height: 16px;
+            fill: currentColor;
         }
 
         .theme-toggle-btn:hover {
@@ -284,6 +298,12 @@
             font-size: var(--font-size-xl);
         }
 
+        .welcome-icon svg {
+            width: 28px;
+            height: 28px;
+            fill: currentColor;
+        }
+
         .welcome-title {
             font-size: var(--font-size-xl);
             font-weight: var(--weight-semibold);
@@ -324,15 +344,15 @@
         }
 
         .message-avatar {
-            width: 32px;
-            height: 32px;
+            width: var(--avatar-size);
+            height: var(--avatar-size);
             border-radius: var(--radius-sm);
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: var(--weight-semibold);
             font-size: var(--font-size-xs);
-            color: #ffffff;
+            color: var(--text-on-accent);
             flex-shrink: 0;
         }
 
@@ -437,6 +457,7 @@
 
         #engine-select:focus-visible {
             outline: 2px solid var(--border-focus);
+            outline-offset: 2px;
         }
 
         .select-arrow {
@@ -474,7 +495,7 @@
         #send-btn {
             background-color: var(--accent-primary);
             border: none;
-            color: #ffffff;
+            color: var(--text-on-accent);
             cursor: pointer;
             width: 36px;
             height: 36px;
@@ -523,6 +544,16 @@
             margin-top: var(--spacing-xs);
         }
 
+        /* Accessibility: Prefers Reduced Motion Standard */
+        @media (prefers-reduced-motion: reduce) {
+            *, ::before, ::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
+        }
+
         /* Responsive Adjustments */
         @media (max-width: 640px) {
             .app-header {
@@ -547,12 +578,12 @@
     <!-- App Header -->
     <header class="app-header">
         <div class="header-brand">
-            <div class="brand-icon">🤖</div>
+            <div class="brand-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2a1 1 0 0 1 1 1v1a7 7 0 0 1 7 7v4a3 3 0 0 1-3 3h-1v1a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-1H6a3 3 0 0 1-3-3v-4a7 7 0 0 1 7-7V3a1 1 0 0 1 1-1zm-3.5 9a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm7 0a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z"/></svg></div>
             <h1 class="brand-title">AI Assistant</h1>
         </div>
         <div class="header-actions">
             <button id="theme-btn" class="theme-toggle-btn" aria-label="Toggle visual theme">
-                <span id="theme-icon">🌙</span>
+                <span id="theme-icon"><svg id="theme-svg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12.3 2c-.43 0-.65.51-.33.8 2.05 1.83 3.33 4.47 3.33 7.4 0 5.39-4.37 9.8-9.8 9.8-2.93 0-5.57-1.28-7.4-3.33-.29-.32-.8-.1-.8.33C2 18.42 6.58 23 12.3 23 18.21 23 23 18.21 23 12.3 23 6.58 18.42 2 12.3 2z"/></svg></span>
                 <span id="theme-label">Dark</span>
             </button>
         </div>
@@ -561,7 +592,7 @@
     <!-- Chat Messages Container -->
     <main class="chat-container" id="chat-container">
         <div class="welcome-state" id="welcome-state">
-            <div class="welcome-icon">💬</div>
+            <div class="welcome-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/></svg></div>
             <h2 class="welcome-title">How can I help you today?</h2>
             <p class="welcome-desc">Select an AI model version from the menu below and type a message to start a conversation.</p>
         </div>
@@ -602,18 +633,18 @@
 
         function toggleTheme() {
             const html = document.documentElement;
-            const themeIcon = document.getElementById("theme-icon");
+            const themeSvg = document.getElementById("theme-svg");
             const themeLabel = document.getElementById("theme-label");
 
             if (currentTheme === 'dark') {
                 currentTheme = 'light';
                 html.setAttribute("data-theme", "light");
-                themeIcon.textContent = "☀️";
+                if (themeSvg) themeSvg.querySelector("path").setAttribute("d", "M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0s-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0s-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.03 0-1.41s-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36c.39-.39.39-1.03 0-1.41s-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z");
                 themeLabel.textContent = "Light";
             } else {
                 currentTheme = 'dark';
                 html.setAttribute("data-theme", "dark");
-                themeIcon.textContent = "🌙";
+                if (themeSvg) themeSvg.querySelector("path").setAttribute("d", "M12.3 2c-.43 0-.65.51-.33.8 2.05 1.83 3.33 4.47 3.33 7.4 0 5.39-4.37 9.8-9.8 9.8-2.93 0-5.57-1.28-7.4-3.33-.29-.32-.8-.1-.8.33C2 18.42 6.58 23 12.3 23 18.21 23 23 18.21 23 12.3 23 6.58 18.42 2 12.3 2z");
                 themeLabel.textContent = "Dark";
             }
         }
