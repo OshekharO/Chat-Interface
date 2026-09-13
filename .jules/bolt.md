@@ -1,3 +1,0 @@
-## 2025-09-12 - Parallel Font Stylesheet Loading & Origin Preconnects
-**Learning:** CSS `@import url(...)` inside style tags creates sequential rendering bottlenecks because browsers cannot start fetching the font stylesheet until after CSS parsing starts. Replacing `@import` with `<link rel="stylesheet">` tags in `<head>` enables parallel resource fetching, and adding `<link rel="preconnect">` for key API/font domains removes DNS, TCP, and TLS handshake latency before user requests occur.
-**Action:** Always check for CSS `@import` or missing `preconnect` hints for third-party resources and APIs in static HTML or web templates to eliminate resource waterfalls.
