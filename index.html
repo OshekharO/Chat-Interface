@@ -7,10 +7,11 @@
     <meta name="description" content="An interactive AI chat interface supporting multiple AI model engines for real-time natural language conversations.">
     <link rel="canonical" href="https://saksham.thedev.id/Chat-Interface/">
 
-    <!-- Performance Optimizations: Preconnect to external origins & pre-fetch Google Fonts -->
+    <!-- Performance Optimizations: Preconnect & dns-prefetch to external origins to reduce network connection latency (DNS/TCP/TLS) before API calls -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://gpt-ai-topaz.vercel.app">
+    <link rel="preconnect" href="https://gpt-ai-olive.vercel.app">
+    <link rel="dns-prefetch" href="https://gpt-ai-olive.vercel.app">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
 
     <!-- Open Graph / Facebook -->
@@ -460,6 +461,12 @@
             outline-offset: 2px;
         }
 
+        #engine-select option {
+            background-color: var(--bg-surface);
+            color: var(--text-primary);
+            padding: var(--spacing-xs) var(--spacing-sm);
+        }
+
         .select-arrow {
             position: absolute;
             right: 8px;
@@ -603,18 +610,21 @@
         <div class="input-container">
             <div class="engine-select-wrapper">
                 <select id="engine-select" aria-label="Select AI Engine Model">
-                    <option value="v1">v1</option>
-                    <option value="v2">v2</option>
-                    <option value="v3">v3</option>
-                    <option value="v4">v4</option>
-                    <option value="v5">v5</option>
-                    <option value="v6">v6</option>
-                    <option value="v7">v7</option>
-                    <option value="v8">v8</option>
-                    <option value="v9">v9</option>
-                    <option value="v10">v10</option>
-                    <option value="v11">v11</option>
-                    <option value="v12">v12</option>
+                    <option value="v1">Pollinations</option>
+                    <option value="v2">OpenRouter</option>
+                    <option value="v3">Riple AI</option>
+                    <option value="v4">Reasoning</option>
+                    <option value="v5">Goody2 AI</option>
+                    <option value="v6">GPT-4o Mini</option>
+                    <option value="v7">Weaver</option>
+                    <option value="v8">Chat with Fiction</option>
+                    <option value="v9">GPT-3.5 Turbo</option>
+                    <option value="v10">PublicAI</option>
+                    <option value="v11">GPT-5 Nano</option>
+                    <option value="v12">Llama Instant</option>
+                    <option value="v13">GPT-5 Mini</option>
+                    <option value="v14">Chataibot</option>
+                    <option value="v15">Dopple AI</option>
                 </select>
                 <span class="select-arrow">▼</span>
             </div>
@@ -650,7 +660,7 @@
         }
 
         async function create(prompt, apiVersion) {
-            const url = `https://gpt-ai-topaz.vercel.app/chat/${apiVersion}`;
+            const url = `https://gpt-ai-olive.vercel.app/chat/${apiVersion}`;
 
             try {
                 const response = await fetch(url, {
